@@ -1,0 +1,43 @@
+resources:
+  jobs:
+    job_sample_etl:
+      name: Sample_ETL
+      job_clusters:
+        - job_cluster_key: Job_cluster
+          new_cluster:
+            spark_env_vars:
+              PYSPARK_PYTHON: /databricks/python3/bin/python3
+            data_security_mode: SINGLE_USER
+            num_workers: 2
+            enable_elastic_disk: true
+            spark_version: 13.3.x-scala2.12
+            node_type_id: Standard_DS3_v2
+            runtime_engine: PHOTON
+            azure_attributes:
+              availability: ON_DEMAND_AZURE
+              first_on_demand: 1
+              spot_bid_max_price: -1
+      tasks:
+        - task_key: Bronze_Task
+          job_cluster_key: Job_cluster
+          run_if: ALL_SUCCESS
+          notebook_task:
+            source: WORKSPACE
+            notebook_path: ../notebooks/CreateBronze.py
+        - task_key: Silver_Task
+          depends_on:
+            - task_key: Bronze_Task
+          job_cluster_key: Job_cluster
+          notebook_task:
+            source: WORKSPACE
+            notebook_path: ../notebooks/CreateSilver.py
+          run_if: ALL_SUCCESS
+        - task_key: Gold_Task
+          depends_on:
+            - task_key: Silver_Task
+          job_cluster_key: Job_cluster
+          run_if: ALL_SUCCESS
+          notebook_task:
+            source: WORKSPACE
+            notebook_path: ../notebooks/CreateGold.py
+      max_concurrent_runs: 1
