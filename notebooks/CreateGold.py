@@ -19,7 +19,7 @@ group_by_key = "c_mktsegment"
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### Read Bronze, filter and Write to Silver
+# MAGIC ### Read Bronze, filter and Write to Gold
 
 # COMMAND ----------
 
