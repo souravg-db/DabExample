@@ -16,8 +16,8 @@ on:
       - main
       - develop
 #env:
-#  DATABRICKS_HOST: https://adb-7845939183926620.0.azuredatabricks.net
-#  DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN }}
+  DATABRICKS_HOST: https://adb-7845939183926620.0.azuredatabricks.net
+  DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN }}
 #  DATABRICKS_CLUSTER_ID: 0201-131003-g7ehlydx
 #  CLUSTER_ID: 0201-131003-g7ehlydx
 jobs:
