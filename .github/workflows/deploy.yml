@@ -1,0 +1,53 @@
+
+
+# This workflow validates, deploys, and runs the specified bundle
+# within a pre-production target named "qa".
+name: "Test deployment"
+
+# Ensure that only a single job or workflow using the same concurrency group
+# runs at a time.
+concurrency: 1
+
+# Trigger this workflow whenever a pull request is opened against the repo's
+# main branch or an existing pull request's head branch is updated.
+on:
+  push:
+    branches:
+      - main
+      - develop
+env:
+  DATABRICKS_HOST: https://adb-7845939183926620.0.azuredatabricks.net
+  DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN }}
+#  DATABRICKS_CLUSTER_ID: 0201-131003-g7ehlydx
+#  CLUSTER_ID: 0201-131003-g7ehlydx
+jobs:
+  test:
+    name: "Test-Code"
+    runs-on: ubuntu-latest
+
+    steps:
+        # Check out this repo, so that this workflow can access it.
+        - uses: actions/checkout@v3
+        - name: Install Python
+          uses: actions/setup-python@v4
+          with:
+            cache: 'pip'
+            python-version: '3.10'
+        - name: Install dependencies
+          run: |
+            pip install -r requirements.txt
+          # Download the Databricks CLI.
+        # See https://github.com/databricks/setup-cli
+        - uses: databricks/setup-cli@main
+
+
+        # Deploy the bundle to the "qa" target as defined
+        # in the bundle's settings file.
+        - run: databricks bundle deploy
+          env:
+            DATABRICKS_BUNDLE_ENV: dev
+#        - run: pytest ./tests/test_main.py
+
+  # Used by the "pipeline_update" job to deploy the bundle.
+  # Bundle validation is automatically performed as part of this deployment.
+  # If validation fails, this workflow fails.
